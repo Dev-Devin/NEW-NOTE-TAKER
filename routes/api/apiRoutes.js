@@ -2,6 +2,8 @@ const router = require("express").Router();
 const path = require("path");
 const file = require("../../db/db.json");
 const fs = require("fs");
+const { v4: uuidv4 } = require("uuid");
+const { json } = require("express");
 
 console.log("dirname= ", __dirname);
 
@@ -16,16 +18,26 @@ router.get("/:id", (req, rest) => {
   rest.json(notes[Number(req.params.id)]);
 });
 
-rout
-er.post("/", (req, rest) => {
+router.post("/", (req, rest) => {
   let notes = JSON.parse(
     fs.readFileSync(path.join(__dirname, "../../db/db.json"), "utf-8")
   );
   console.log("19", notes);
-  notes.push("")
+
+  let newNote = {
+    title: req.body.title,
+    text: req.body.text,
+    id: uuidv4(),
+  };
+  notes.push(newNote);
+  console.log(newNote);
   console.log(req.body);
   //info from req to the array
-fs.writeFile(path.join(__dirname, "../../db/db.json"))
+  fs.writeFileSync(
+    path.join(__dirname, "../../db/db.json"),
+    JSON.stringify(notes)
+  );
+  rest.json(newNote);
   //info will be from the req.body
   //resave file where the info is from the new array
 });
